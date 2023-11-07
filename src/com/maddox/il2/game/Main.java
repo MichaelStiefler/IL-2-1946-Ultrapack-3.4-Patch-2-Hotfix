@@ -1,7 +1,9 @@
 package com.maddox.il2.game;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -92,6 +94,8 @@ public abstract class Main {
     public static int            iExitCode;
 
     public EffClouds             clouds;
+
+    private static boolean       DUMP_ALLC = false;
 
     public Main() {
         this.airClasses = new ArrayList();
@@ -447,15 +451,42 @@ public abstract class Main {
     static {
         Main.bRequestExit = false;
         Main.iExitCode = 0;
+        PrintWriter pwClassesOK = null;
+        PrintWriter pwClassesNOK = null;
+        BufferedReader allcReader = null;
         try {
-            final BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.Int("allc"))), getSwTbl(Finger.Int("alls")))));
-            while (true) {
-                final String str = localBufferedReader.readLine();
-                if (str == null) break;
-                Class.forName("com.maddox." + str);
+            allcReader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.Int("allc"))), getSwTbl(Finger.Int("alls")))));
+            if (DUMP_ALLC) {
+                pwClassesOK = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("allc_OK.txt", 0), false)));
+                pwClassesNOK = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("allc_NOK.txt", 0), false)));
             }
-            localBufferedReader.close();
-        } catch (Exception ex) {}
+            while (true) {
+                final String str = allcReader.readLine();
+                if (str == null) break;
+                try {
+                    Class.forName("com.maddox." + str);
+                    if (DUMP_ALLC && pwClassesOK != null) pwClassesOK.println(str);
+                } catch (Exception e) {
+                    if (DUMP_ALLC && pwClassesNOK != null) pwClassesNOK.println("com.maddox." + str);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (allcReader != null) {
+                try {
+                    allcReader.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (pwClassesOK != null) {
+                pwClassesOK.close();
+            }
+            if (pwClassesNOK != null) {
+                pwClassesNOK.close();
+            }
+        }
     }
 
     class ConsoleServer extends Thread implements ConsoleOut {

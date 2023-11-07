@@ -4,10 +4,24 @@ import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.Property;
 
 public class FI_156SuperMegaUltraDeluxeEdition extends Scheme1 implements TypeFighter, TypeTNBFighter {
+
+    public static void prepareWeapons(Class aircraftClass, HierMesh hierMesh, String thisWeaponsName)
+    {
+        hierMesh.chunkVisible("Booster_D0", thisWeaponsName.startsWith("CMBSTR"));
+        hierMesh.chunkVisible("BoosterAdd_D0", thisWeaponsName.startsWith("CMBSTR"));
+    }
+
+    public void onAircraftLoaded()
+    {
+        super.onAircraftLoaded();
+        prepareWeapons(this.getClass(), this.hierMesh(), this.thisWeaponsName);
+    }
+
     public void rareAction(float f, boolean flag) {
         super.rareAction(f, flag);
         for (int i = 1; i < 3; i++) {
@@ -191,7 +205,15 @@ public class FI_156SuperMegaUltraDeluxeEdition extends Scheme1 implements TypeFi
         Property.set(class1, "yearExpired", 1956F);
         Property.set(class1, "FlightModel", "FlightModels/Fi-156SuperMegaUltraDeluxeEdition.fmd");
         Property.set(class1, "cockpitClass", new Class[] { CockpitFI_156SuperMegaUltraDeluxeEdition.class, CockpitFI_156SuperMegaUltraDeluxeEdition_Gunner.class });
-        Aircraft.weaponTriggersRegister(class1, new int[] { 9, 0, 9, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
-        Aircraft.weaponHooksRegister(class1, new String[] { "_ExternalDev01", "_MGUN02", "_ExternalDev02", "_MGUN03", "_MGUN01", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN03" });
+        Aircraft.weaponTriggersRegister(class1, new int[] { 9, 0, 9, 0, 10, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 1, 9, 9, 9, 9,
+                9, 9, 9, 9, 1, 1, 1, 1, 1, 1,
+                1, 1});
+        Aircraft.weaponHooksRegister(class1, new String[] { "_ExternalDev01", "_MGUN02", "_ExternalDev02", "_MGUN03", "_MGUN01", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN02",
+                "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN02", "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN03",
+                "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN03", "_MGUN04", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06",
+                "_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", 
+                "_ExternalRock07", "_ExternalRock08" });
     }
 }

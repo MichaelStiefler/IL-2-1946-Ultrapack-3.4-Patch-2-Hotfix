@@ -454,6 +454,7 @@ public abstract class Main {
         PrintWriter pwClassesOK = null;
         PrintWriter pwClassesNOK = null;
         BufferedReader allcReader = null;
+        DUMP_ALLC = true;
         try {
             allcReader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.Int("allc"))), getSwTbl(Finger.Int("alls")))));
             if (DUMP_ALLC) {
@@ -488,6 +489,97 @@ public abstract class Main {
             }
         }
     }
+    
+/*
+ * Multithreaded Test Version, not functional
+ */
+    
+//    static {
+//        Main.bRequestExit = false;
+//        Main.iExitCode = 0;
+//        PrintWriter pwClassesOK = null;
+//        PrintWriter pwClassesNOK = null;
+//        BufferedReader allcReader = null;
+//        ArrayList threads = new ArrayList();
+//        ClassLoader cl = Main.class.getClassLoader();
+//        try {
+//            allcReader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.Int("allc"))), getSwTbl(Finger.Int("alls")))));
+//            if (DUMP_ALLC) {
+//                pwClassesOK = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("allc_OK.txt", 0), false)));
+//                pwClassesNOK = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName("allc_NOK.txt", 0), false)));
+//            }
+//            while (true) {
+//                final String str = allcReader.readLine();
+//                if (str == null) break;
+//                Thread thread = new Thread(new PreLoader(str, pwClassesOK, pwClassesNOK, cl));
+//                threads.add(thread);
+//                thread.start();
+//                if (threads.size() > 20)
+//                    while(threads.size() > 10)
+//                        try {
+//                            ((Thread)threads.get(0)).join();
+//                            threads.remove(0);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (allcReader != null) {
+//                try {
+//                    allcReader.close();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            if (pwClassesOK != null) {
+//                pwClassesOK.close();
+//            }
+//            if (pwClassesNOK != null) {
+//                pwClassesNOK.close();
+//            }
+//        }
+//        System.out.println("waiting for " + threads.size() + " threads!");
+//        for(int i = 0; i < threads.size(); i++)
+//            try {
+//                ((Thread)threads.get(i)).join();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        System.out.println("" + threads.size() + " threads finished!");
+//    }
+//    
+//    static class PreLoader implements Runnable
+//    {
+//       String className;
+//       PrintWriter pwClassesOK = null;
+//       PrintWriter pwClassesNOK = null;
+//       ClassLoader cl;
+//
+//       PreLoader(String className, PrintWriter pwClassesOK, PrintWriter pwClassesNOK, ClassLoader cl)
+//       {
+//          this.className = className;
+//          this.pwClassesOK = pwClassesOK;
+//          this.pwClassesNOK = pwClassesNOK;
+//          this.cl = cl;
+//       }
+//
+//       public void run()
+//       {
+//           try {
+//               Class.forName("com.maddox." + className, false, cl);
+//               if (DUMP_ALLC && pwClassesOK != null) pwClassesOK.println(className);
+//           } catch (Exception e) {
+//               try {
+//                   Class.forName("com.maddox." + className);
+//                   if (DUMP_ALLC && pwClassesOK != null) pwClassesOK.println(className);
+//               } catch (Exception e2) {
+//                   if (DUMP_ALLC && pwClassesNOK != null) pwClassesNOK.println("com.maddox." + className);
+//               }
+//           }
+//       }
+//    }
 
     class ConsoleServer extends Thread implements ConsoleOut {
         ArrayList       clientAdr;

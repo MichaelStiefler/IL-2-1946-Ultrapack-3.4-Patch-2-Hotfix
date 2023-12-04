@@ -2217,7 +2217,7 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
                             //a_lweaponslot[k] = new _WeaponSlot(numbertokenizer.next(0), numbertokenizer.next(null), numbertokenizer.next(-12345));
                         } catch (Exception e) {
                             System.out.println("Error while creating WeaponSlot Nr. " + slotNr + ": " + weaponName + " (" + numBullets + ") for Aircraft " + class1.getName());
-                            //e.printStackTrace();
+//                            e.printStackTrace();
                         }
                     }
                 }

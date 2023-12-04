@@ -969,10 +969,10 @@ public class Gear {
         if (i > 6 && this.bIsMaster) {
             Actor actor = this.FM.actor;
             if (actor == World.getPlayerAircraft() && this.FM.Loc.z - Engine.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) < 2.0 && !this.bTheBabysGonnaBlow) {
-                for (int i_14_ = 0; i_14_ < this.FM.CT.Weapons.length; i_14_++)
-                    if (this.FM.CT.Weapons[i_14_] != null && this.FM.CT.Weapons[i_14_].length > 0) for (int i_15_ = 0; i_15_ < this.FM.CT.Weapons[i_14_].length; i_15_++)
-                        if ((this.FM.CT.Weapons[i_14_][i_15_] instanceof BombGun || this.FM.CT.Weapons[i_14_][i_15_] instanceof RocketGun || this.FM.CT.Weapons[i_14_][i_15_] instanceof RocketBombGun) && this.FM.CT.Weapons[i_14_][i_15_].haveBullets()
-                                && this.FM.getSpeed() > 38.0F && this.FM.CT.Weapons[i_14_][i_15_].getHookName().startsWith("_External"))
+                for (int slotY = 0; slotY < this.FM.CT.Weapons.length; slotY++)
+                    if (this.FM.CT.Weapons[slotY] != null && this.FM.CT.Weapons[slotY].length > 0) for (int slotX = 0; slotX < this.FM.CT.Weapons[slotY].length; slotX++)
+                        if ((this.FM.CT.Weapons[slotY][slotX] instanceof BombGun || this.FM.CT.Weapons[slotY][slotX] instanceof RocketGun || this.FM.CT.Weapons[slotY][slotX] instanceof RocketBombGun) && this.FM.CT.Weapons[slotY][slotX].haveBullets()
+                                && this.FM.getSpeed() > 38.0F && this.FM.CT.Weapons[slotY][slotX].getHookName().startsWith("_E"))
                             this.bTheBabysGonnaBlow = true;
                 if (this.bTheBabysGonnaBlow && (!this.FM.isPlayers() || World.cur().diffCur.Vulnerability) && ((Aircraft) this.FM.actor).isEnablePostEndAction(0.0)) {
                     ((Aircraft) this.FM.actor).postEndAction(0.0, Engine.actorLand(), 2, null);

@@ -1,5 +1,7 @@
 package com.maddox.il2.objects.air;
 
+import java.text.DecimalFormat;
+
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.World;
@@ -61,62 +63,62 @@ public class ME_262V3 extends ME_262 {
             super.engineSurge(f);
             return;
         }
-        for (int i = 0; i < 2; i++) {
-            this.FM.EI.engines[i].engineAcceleration = smoothCvt(this.FM.EI.engines[i].getRPM(), 2450F, 3400F, 0.03F, 0.15F); // limit engine acceleration below RPM_CRIT
-            if (this.curthrl[i] == -1F) this.curthrl[i] = this.oldthrl[i] = this.FM.EI.engines[i].getControlThrottle();
+        for (int engineIndex = 0; engineIndex < 2; engineIndex++) {
+            this.FM.EI.engines[engineIndex].engineAcceleration = smoothCvt(this.FM.EI.engines[engineIndex].getRPM(), 2450F, 3400F, 0.03F, 0.15F); // limit engine acceleration below RPM_CRIT
+            if (this.curthrl[engineIndex] == -1F) this.curthrl[engineIndex] = this.oldthrl[engineIndex] = this.FM.EI.engines[engineIndex].getControlThrottle();
             else {
-//                // +++ Debugging Output only
-//                if (DEBUG_SPOOL_UP && this.FM.brakeShoe) {
-//                    if (i == 0 && this.oldthrl[i] < 0.01F)
-//                        spoolUpStartTest = Time.current();
-//                    float newThrottle = this.oldthrl[i] + CHECK_DIFF_UP_PER_TICK * f * THROTTLE_SMOOTHING_FACTOR / (1.0F - CHECK_DIFF_UP_PER_TICK * f);
-//                    if (i == 0 && newThrottle > 1.0F && spoolUpTimeTest == -1L)
-//                        spoolUpTimeTest = Time.current() - spoolUpStartTest;
-//                    if (newThrottle > 1.0F)
-//                        newThrottle = 1.0F;
-//                    this.FM.EI.engines[i].setControlThrottle(newThrottle);
-//                    if (i == 0 && this.FM.EI.engines[i].getRPM() > 3300F && spoolUpTimeTest2 == -1L)
-//                        spoolUpTimeTest2 = Time.current() - spoolUpStartTest;
-//                    if (i == 0) {
-////                      HUD.training((spoolUpTimeTest > 0L ? "T1=" + spoolUpTimeTest + ", ":"") + (spoolUpTimeTest2 > 0L ? "T2=" + spoolUpTimeTest2 + ", ":"") + "gt=" + df.format(this.FM.EI.engines[i].getControlThrottle()) + ", ct=" + df.format(this.curthrl[i]) + ", cof=" + df.format((this.curthrl[i] - this.oldthrl[i]) / f));
-////                        HUD.training((spoolUpTimeTest > 0L ? "T1=" + spoolUpTimeTest : "") + (spoolUpTimeTest2 > 0L ? "     T2=" + spoolUpTimeTest2 : ""));
-//                    }
-//                }
-//                // ---
-                this.curthrl[i] = (THROTTLE_SMOOTHING_FACTOR * this.oldthrl[i] + this.FM.EI.engines[i].getControlThrottle()) / (THROTTLE_SMOOTHING_FACTOR + 1.0F);
-                if ((this.curthrl[i] - this.oldthrl[i]) / f > CHECK_DIFF_UP_PER_TICK && this.FM.EI.engines[i].getRPM() < RPM_CRIT && this.FM.EI.engines[i].getStage() == 6 && World.Rnd().nextFloat() < 0.5F) {
+                // +++ Debugging Output only
+                if (DEBUG_SPOOL_UP && this.FM.brakeShoe) {
+                    if (engineIndex == 0 && this.oldthrl[engineIndex] < 0.01F)
+                        spoolUpStartTest = Time.current();
+                    float newThrottle = this.oldthrl[engineIndex] + CHECK_DIFF_UP_PER_TICK * f * THROTTLE_SMOOTHING_FACTOR / (1.0F - CHECK_DIFF_UP_PER_TICK * f);
+                    if (engineIndex == 0 && newThrottle > 1.0F && spoolUpTimeTest == -1L)
+                        spoolUpTimeTest = Time.current() - spoolUpStartTest;
+                    if (newThrottle > 1.0F)
+                        newThrottle = 1.0F;
+                    this.FM.EI.engines[engineIndex].setControlThrottle(newThrottle);
+                    if (engineIndex == 0 && this.FM.EI.engines[engineIndex].getRPM() > 3300F && spoolUpTimeTest2 == -1L)
+                        spoolUpTimeTest2 = Time.current() - spoolUpStartTest;
+                    if (engineIndex == 0) {
+                        HUD.training((spoolUpTimeTest > 0L ? "T1=" + spoolUpTimeTest + ", ":"") + (spoolUpTimeTest2 > 0L ? "T2=" + spoolUpTimeTest2 + ", ":"") + "gt=" + df.format(this.FM.EI.engines[engineIndex].getControlThrottle()) + ", ct=" + df.format(this.curthrl[engineIndex]) + ", cof=" + df.format((this.curthrl[engineIndex] - this.oldthrl[engineIndex]) / f));
+                        HUD.training((spoolUpTimeTest > 0L ? "T1=" + spoolUpTimeTest : "") + (spoolUpTimeTest2 > 0L ? "     T2=" + spoolUpTimeTest2 : ""));
+                    }
+                }
+                // ---
+                this.curthrl[engineIndex] = (THROTTLE_SMOOTHING_FACTOR * this.oldthrl[engineIndex] + this.FM.EI.engines[engineIndex].getControlThrottle()) / (THROTTLE_SMOOTHING_FACTOR + 1.0F);
+                if ((this.curthrl[engineIndex] - this.oldthrl[engineIndex]) / f > CHECK_DIFF_UP_PER_TICK && this.FM.EI.engines[engineIndex].getRPM() < RPM_CRIT && this.FM.EI.engines[engineIndex].getStage() == 6 && World.Rnd().nextFloat() < 0.5F) {
                     if (this.FM.actor == World.getPlayerAircraft()) HUD.log("Compressor Stall!");
                     this.playSound("weapon.MGunMk108s", true);
-                    this.engineSurgeDamage[i] += 0.01D * (this.FM.EI.engines[i].getRPM() / 1000F);
-                    this.FM.EI.engines[i].doSetReadyness(this.FM.EI.engines[i].getReadyness() - this.engineSurgeDamage[i]);
-                    if (World.Rnd().nextFloat() < 0.2F && this.FM instanceof RealFlightModel && ((RealFlightModel) this.FM).isRealMode()) this.FM.AS.hitEngine(this, i, 100);
-                    if (World.Rnd().nextFloat() < 0.2F && this.FM instanceof RealFlightModel && ((RealFlightModel) this.FM).isRealMode()) this.FM.EI.engines[i].setEngineDies(this);
-                    this.curthrl[i] = this.oldthrl[i] = this.FM.EI.engines[i].getControlThrottle(); // Make sure to skip
+                    this.engineSurgeDamage[engineIndex] += 0.01D * (this.FM.EI.engines[engineIndex].getRPM() / 1000F);
+                    this.FM.EI.engines[engineIndex].doSetReadyness(this.FM.EI.engines[engineIndex].getReadyness() - this.engineSurgeDamage[engineIndex]);
+                    if (World.Rnd().nextFloat() < 0.2F && this.FM instanceof RealFlightModel && ((RealFlightModel) this.FM).isRealMode()) this.FM.AS.hitEngine(this, engineIndex, 100);
+                    if (World.Rnd().nextFloat() < 0.2F && this.FM instanceof RealFlightModel && ((RealFlightModel) this.FM).isRealMode()) this.FM.EI.engines[engineIndex].setEngineDies(this);
+                    this.curthrl[engineIndex] = this.oldthrl[engineIndex] = this.FM.EI.engines[engineIndex].getControlThrottle(); // Make sure to skip
                                                                                                     // further engine
                                                                                                     // damage for this
                                                                                                     // throttle change,
                                                                                                     // it's been handled
                                                                                                     // already!
                 }
-                if ((this.curthrl[i] - this.oldthrl[i]) / f < -CHECK_DIFF_DOWN_PER_TICK && (this.curthrl[i] - this.oldthrl[i]) / f > -100F && this.FM.EI.engines[i].getRPM() < RPM_CRIT && this.FM.EI.engines[i].getStage() == 6) {
+                if ((this.curthrl[engineIndex] - this.oldthrl[engineIndex]) / f < -CHECK_DIFF_DOWN_PER_TICK && (this.curthrl[engineIndex] - this.oldthrl[engineIndex]) / f > -100F && this.FM.EI.engines[engineIndex].getRPM() < RPM_CRIT && this.FM.EI.engines[engineIndex].getStage() == 6) {
                     this.playSound("weapon.MGunMk108s", true);
-                    this.engineSurgeDamage[i] += 0.001D * (this.FM.EI.engines[i].getRPM() / 1000F);
-                    this.FM.EI.engines[i].doSetReadyness(this.FM.EI.engines[i].getReadyness() - this.engineSurgeDamage[i]);
+                    this.engineSurgeDamage[engineIndex] += 0.001D * (this.FM.EI.engines[engineIndex].getRPM() / 1000F);
+                    this.FM.EI.engines[engineIndex].doSetReadyness(this.FM.EI.engines[engineIndex].getReadyness() - this.engineSurgeDamage[engineIndex]);
                     if (World.Rnd().nextFloat() < 0.5F && this.FM instanceof RealFlightModel && ((RealFlightModel) this.FM).isRealMode()) {
                         if (this.FM.actor == World.getPlayerAircraft()) HUD.log("Engine Flameout!");
-                        this.FM.EI.engines[i].setEngineStops(this);
+                        this.FM.EI.engines[engineIndex].setEngineStops(this);
                     } else {
                         if (this.FM.actor == World.getPlayerAircraft()) HUD.log("Compressor Stall!");
-                        this.FM.EI.engines[i].setKillCompressor(this);
+                        this.FM.EI.engines[engineIndex].setKillCompressor(this);
                     }
-                    this.curthrl[i] = this.oldthrl[i] = this.FM.EI.engines[i].getControlThrottle(); // Make sure to skip
+                    this.curthrl[engineIndex] = this.oldthrl[engineIndex] = this.FM.EI.engines[engineIndex].getControlThrottle(); // Make sure to skip
                                                                                                     // further engine
                                                                                                     // damage for this
                                                                                                     // throttle change,
                                                                                                     // it's been handled
                                                                                                     // already!
                 }
-                this.oldthrl[i] = this.curthrl[i];
+                this.oldthrl[engineIndex] = this.curthrl[engineIndex];
             }
         }
     }
@@ -246,11 +248,11 @@ public class ME_262V3 extends ME_262 {
 
     // Parameters below are for Debugging purpose only
     private static boolean DEBUG = false;
-//    private static boolean     DEBUG_SPOOL_UP                  = false;
-//    private static DecimalFormat       df                              = new DecimalFormat("#.##");
-//    private long               spoolUpStartTest                = -1L;
-//    private long               spoolUpTimeTest                 = -1L;
-//    private long               spoolUpTimeTest2                = -1L;
+    private static boolean     DEBUG_SPOOL_UP                  = false;
+    private static DecimalFormat df                            = new DecimalFormat("#.##");
+    private long               spoolUpStartTest                = -1L;
+    private long               spoolUpTimeTest                 = -1L;
+    private long               spoolUpTimeTest2                = -1L;
 
     static {
         Class class1 = ME_262V3.class;
